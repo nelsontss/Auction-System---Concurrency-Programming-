@@ -41,4 +41,8 @@ public class Servidor {
     public void setReservado(boolean reservado) {
         this.reservado = reservado;
     }
+
+    public void setPreco(double precoNominal) {
+        this.precoNominal = precoNominal;
+    }
 }

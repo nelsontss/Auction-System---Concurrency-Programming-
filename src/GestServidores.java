@@ -1,21 +1,31 @@
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class GestServidores {
     private ReentrantLock usersLock;
-    private int nReservas;
+    private ReentrantLock leiloesLock;
+    private Condition c1;
+    private AtomicInteger nReservas;
     private Map<String,User> users;
+    private AtomicInteger servidoresDisponiveis;
     private Map<String,Servidor> servers;
     private Map<String,Servidor> serversLeiao;
+    private Map<String,Leilao> leiloes;
+    private Leiloeiro leiloeiro;
     private Map<String,Reserva> reservas;
 
     public GestServidores(){
-        users = new HashMap<String,User>();
+        users = new HashMap<>();
         usersLock = new ReentrantLock();
+        leiloesLock = new ReentrantLock();
+        c1 = leiloesLock.newCondition();
         servers = new HashMap<>();
         serversLeiao = new HashMap<>();
+        leiloes = new HashMap<>();
         servers.put("0",new Servidor("0","s0.micro", 0.99,"mirco"));
         servers.put("1",new Servidor("1","s1.micro", 0.99,"mirco"));
         servers.put("2",new Servidor("2","s2.medium", 0.99,"medium"));
@@ -23,13 +33,13 @@ public class GestServidores {
         servers.put("4",new Servidor("4","s4.large", 2.30,"large"));
         servers.put("5",new Servidor("5","s5.large", 2.30,"large"));
         serversLeiao.put("0",new Servidor("0","s0L.micro", 0,"mirco"));
-        serversLeiao.put("1",new Servidor("1","s1L.micro", 0,"mirco"));
-        serversLeiao.put("2",new Servidor("2","s2L.medium", 0,"medium"));
-        serversLeiao.put("3",new Servidor("3","s3L.medium", 0,"medium"));
-        serversLeiao.put("4",new Servidor("4","s4L.large", 0,"large"));
-        serversLeiao.put("5",new Servidor("5","s5L.large", 0,"large"));
         reservas = new HashMap<>();
-        nReservas = 0;
+        nReservas = new AtomicInteger(0);
+        servidoresDisponiveis = new AtomicInteger(0);
+        for(Servidor s : serversLeiao.values())
+            servidoresDisponiveis.incrementAndGet();
+        leiloeiro = new Leiloeiro(serversLeiao,leiloes,leiloesLock,c1,usersLock,nReservas,reservas,users,servidoresDisponiveis);
+        new Thread(leiloeiro).start();
     }
 
     public boolean login(String user, String pass){
@@ -63,7 +73,7 @@ public class GestServidores {
         }
         else {
             String i = String.valueOf(nReservas);
-            nReservas++;
+            nReservas.incrementAndGet();
             Servidor s = servers.get(id);
             s.lock();
             usersLock.unlock();
@@ -71,12 +81,11 @@ public class GestServidores {
                 return -1;
             else {
                 s.setReservado(true);
-                reservas.put(i, new Reserva(LocalDateTime.now(), i, s, users.get(user)));
+                reservas.put(i, new Reserva(LocalDateTime.now(), i, s, users.get(user),0));
             }
             s.unlock();
             return Integer.valueOf(i);
         }
-
     }
 
     public int liberta(String id, String user){
@@ -87,11 +96,38 @@ public class GestServidores {
         }
         else {
             Reserva r = reservas.get(id);
+            Servidor s = r.getServer();
+            s.lock();
             usersLock.unlock();
-            r.terminarReserva();
+            r.terminarReserva(leiloesLock,c1,servidoresDisponiveis);
+            s.unlock();
             return 0;
         }
     }
+
+    public int licitar(String id, String user, Double bid){
+        usersLock.lock();
+        if(!leiloes.containsKey(id)) {
+            usersLock.unlock();
+            return -1;
+        }else{
+            Leilao l = leiloes.get(id);
+            l.lock();
+            usersLock.unlock();
+            try {
+                l.licitar(user, bid);
+                l.unlock();
+                return 0;
+            } catch (LicitacaoInsuficienteException e) {
+                l.unlock();
+                return 1;
+            }
+        }
+    }
+
+
+
+
 
 
 }

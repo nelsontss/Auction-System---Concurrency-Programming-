@@ -66,6 +66,28 @@ public class ServerWorker implements Runnable {
         }
     }
 
+    public void licitarServer(String id, String bid, PrintWriter out){
+        try {
+            int r = e.licitar(id,this.user,Double.parseDouble(bid));
+            if(r == 0){
+                out.println("Licitação efetuada.");
+                out.flush();
+            }
+            if(r == -1){
+                out.println("O servidor nao estao disponivel.");
+                out.flush();
+            }
+            if(r == 1){
+                out.println("Licitação insuficiente.");
+                out.flush();
+            }
+        }catch (NumberFormatException e) {
+            out.println("O preço que indicou não é valido.");
+            out.flush();
+        }
+
+    }
+
     @Override
     public void run() {
         try {
@@ -91,6 +113,7 @@ public class ServerWorker implements Runnable {
                 switch (cmd[0]){
                     case "reservarServer":reservarServer(cmd[1],out);break;
                     case "libertarServer":libertaServer(cmd[1],out);break;
+                    case "licitarServer":licitarServer(cmd[1],cmd[2],out);break;
                     default:out.println("Erro: Comando Invalido!");out.flush();break;
                 }
             }

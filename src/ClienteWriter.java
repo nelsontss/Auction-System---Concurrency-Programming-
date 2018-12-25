@@ -25,6 +25,7 @@ class ClienteWriter implements Runnable {
                     case "register": out.println(x);out.flush();break;
                     case "reservarServer": out.println(x);out.flush();break;
                     case "libertarServer": out.println(x);out.flush();break;
+                    case "licitarServer": out.println(x); out.flush();break;
                     default:System.out.println("Erro: Comando Invalido!");
                 }
 
