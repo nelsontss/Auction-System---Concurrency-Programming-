@@ -81,7 +81,9 @@ public class GestServidores {
                 return -1;
             else {
                 s.setReservado(true);
-                reservas.put(i, new Reserva(LocalDateTime.now(), i, s, users.get(user),0));
+                Reserva r = new Reserva(LocalDateTime.now(), i, s, users.get(user),0);
+                reservas.put(i, r);
+                users.get(user).addReserva(i,r);
             }
             s.unlock();
             return Integer.valueOf(i);
@@ -125,9 +127,8 @@ public class GestServidores {
         }
     }
 
-
-
-
-
+    public double consultarDivida(String user){
+        return users.get(user).getvDivida();
+    }
 
 }

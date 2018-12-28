@@ -88,6 +88,12 @@ public class ServerWorker implements Runnable {
 
     }
 
+    public void consultarDivida(PrintWriter out){
+        double div = e.consultarDivida(this.user);
+        out.println("A sua divida é: " + div + " €");
+        out.flush();
+    }
+
     @Override
     public void run() {
         try {
@@ -114,6 +120,7 @@ public class ServerWorker implements Runnable {
                     case "reservarServer":reservarServer(cmd[1],out);break;
                     case "libertarServer":libertaServer(cmd[1],out);break;
                     case "licitarServer":licitarServer(cmd[1],cmd[2],out);break;
+                    case "consultarDivida": consultarDivida(out);break;
                     default:out.println("Erro: Comando Invalido!");out.flush();break;
                 }
             }

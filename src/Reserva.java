@@ -25,8 +25,9 @@ public class Reserva {
     }
 
     public double getValorPagar(){
-        if(terminada = false)
-            return Duration.between(LocalDateTime.now(), inicio).toHours()*s.getPrecoNominal();
+        if(!terminada) {
+            return Duration.between(inicio, LocalDateTime.now()).toHours() * s.getPrecoNominal();
+        }
         else
             return valorPagar;
     }

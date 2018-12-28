@@ -37,7 +37,9 @@ public class FechaLeilao implements Runnable{
         usersLock.unlock();
         s.setReservado(true);
         s.setPreco(preco);
-        reservas.put(i, new Reserva(LocalDateTime.now(), i, s, users.get(user),1));
+        Reserva r = new Reserva(LocalDateTime.now(), i, s, users.get(user),1);
+        reservas.put(i, r);
+        users.get(user).addReserva(i,r);
         leiloes.remove(s.getId());
         s.unlock();
         return Integer.valueOf(i);
