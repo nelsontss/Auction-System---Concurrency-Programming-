@@ -93,6 +93,21 @@ public class ServerWorker implements Runnable {
         out.println("A sua divida é: " + div + " €");
         out.flush();
     }
+    
+       public void mostrarCatalogo (PrintWriter out) {
+        try {
+            for (Servidor m : e.getServers().values()) {
+                if (!m.isReservado()) {
+                    out.println("m.getId()    String.valueOf(m.getPrecoNominal()) \n");
+                    out.flush();
+                }
+            }
+        }
+        catch (NumberFormatException e) {
+        out.println("Não há servidores disponíveis no catálogo");
+        out.flush();
+    }
+    }
 
     @Override
     public void run() {
@@ -121,6 +136,7 @@ public class ServerWorker implements Runnable {
                     case "libertarServer":libertaServer(cmd[1],out);break;
                     case "licitarServer":licitarServer(cmd[1],cmd[2],out);break;
                     case "consultarDivida": consultarDivida(out);break;
+                    case "mostrarCatalogo":licitarServer(out);break;    
                     default:out.println("Erro: Comando Invalido!");out.flush();break;
                 }
             }
