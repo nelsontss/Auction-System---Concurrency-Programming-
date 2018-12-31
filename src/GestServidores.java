@@ -131,4 +131,12 @@ public class GestServidores {
         return users.get(user).getvDivida();
     }
 
+    public Map<String, Servidor> getServers()  {
+        Map<String,Servidor> finalserver=new HashMap<>();
+        usersLock.lock();
+        for(Entry<String,Servidor> c: servers.entrySet())
+            finalserver.put(c.getKey(), c.getValue());
+        usersLock.unlock();
+        return finalserver;
+    }
 }
