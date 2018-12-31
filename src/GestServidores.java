@@ -1,9 +1,12 @@
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 public class GestServidores {
     private ReentrantLock usersLock;
@@ -33,6 +36,7 @@ public class GestServidores {
         servers.put("4",new Servidor("4","s4.large", 2.30,"large"));
         servers.put("5",new Servidor("5","s5.large", 2.30,"large"));
         serversLeiao.put("0",new Servidor("0","s0L.micro", 0,"mirco"));
+        serversLeiao.put("1",new Servidor("1","s1L.medium",0,"medium"));
         reservas = new HashMap<>();
         nReservas = new AtomicInteger(0);
         servidoresDisponiveis = new AtomicInteger(0);
@@ -134,9 +138,17 @@ public class GestServidores {
     public Map<String, Servidor> getServers()  {
         Map<String,Servidor> finalserver=new HashMap<>();
         usersLock.lock();
-        for(Entry<String,Servidor> c: servers.entrySet())
+        for(Map.Entry<String,Servidor> c: servers.entrySet())
             finalserver.put(c.getKey(), c.getValue());
         usersLock.unlock();
         return finalserver;
+    }
+
+    public List<Leilao> getLeiloes(){
+        usersLock.lock();
+        List<Leilao> cs = new ArrayList<Leilao>();
+        cs=this.leiloes.values().stream().collect(Collectors.toList());
+        usersLock.unlock();
+        return cs;
     }
 }

@@ -22,8 +22,16 @@ public class Servidor {
         return id;
     }
 
+    public String getNome() {
+        return nome;
+    }
+
     public double getPrecoNominal() {
         return precoNominal;
+    }
+
+    public String getTipo(){
+        return tipo;
     }
 
     public void lock(){
@@ -44,5 +52,11 @@ public class Servidor {
 
     public void setPreco(double precoNominal) {
         this.precoNominal = precoNominal;
+    }
+
+    public String toString(){
+        StringBuilder sb= new StringBuilder();
+        sb.append("Id: " + this.getId() + " "); sb.append("Nome: " + this.getNome()+ " "); sb.append("Tipo: " + this.getTipo() + " ");
+        return sb.toString();
     }
 }

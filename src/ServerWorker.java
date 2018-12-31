@@ -3,6 +3,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServerWorker implements Runnable {
     private Socket s;
@@ -94,11 +98,11 @@ public class ServerWorker implements Runnable {
         out.flush();
     }
     
-       public void mostrarCatalogo (PrintWriter out) {
+    public void mostrarCatalogo (PrintWriter out) {
         try {
             for (Servidor m : e.getServers().values()) {
                 if (!m.isReservado()) {
-                    out.println("m.getId()    String.valueOf(m.getPrecoNominal()) \n");
+                    out.println("Servidor " + m.getId() + " Preço para alugar: " + String.valueOf(m.getPrecoNominal()));
                     out.flush();
                 }
             }
@@ -106,7 +110,24 @@ public class ServerWorker implements Runnable {
         catch (NumberFormatException e) {
         out.println("Não há servidores disponíveis no catálogo");
         out.flush();
+        }
     }
+
+    public void mostrarCatalogoLeiloes(PrintWriter out) {
+        List<Leilao> cl = new ArrayList<Leilao>();
+        cl = e.getLeiloes();
+        if (cl.isEmpty()) {
+            out.println("Não há leilões neste momento.");
+            out.flush();
+        }
+        else {
+            for (Leilao l : cl) {
+                if (LocalDateTime.now().isBefore(l.getFim())) {
+                    out.println("Leilão do servidor " + l.getServidor().toString() + "\nTempo que falta para acabar o leilão: " + Duration.between(LocalDateTime.now(), l.getFim()) + "\nValor da licitação " + l.getValorLicitacao());
+                    out.flush();
+                }
+            }
+        }
     }
 
     @Override
@@ -136,7 +157,8 @@ public class ServerWorker implements Runnable {
                     case "libertarServer":libertaServer(cmd[1],out);break;
                     case "licitarServer":licitarServer(cmd[1],cmd[2],out);break;
                     case "consultarDivida": consultarDivida(out);break;
-                    case "mostrarCatalogo":licitarServer(out);break;    
+                    case "mostrarCatalogo":mostrarCatalogo(out);break;
+                    case "mostrarCatalogoLeiloes":mostrarCatalogoLeiloes(out);break;
                     default:out.println("Erro: Comando Invalido!");out.flush();break;
                 }
             }

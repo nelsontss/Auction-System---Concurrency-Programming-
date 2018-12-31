@@ -55,4 +55,16 @@ public class Leilao {
     public Servidor getServer() {
         return s;
     }
+
+    public Servidor getServidor(){
+        return s;
+    }
+
+    public double getValorLicitacao(){
+        return vLicitacao;
+    }
+
+    public LocalDateTime getFim(){
+        return fim;
+    }
 }
