@@ -4,6 +4,10 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Map;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServerWorker implements Runnable {
     private Socket s;
@@ -95,7 +99,7 @@ public class ServerWorker implements Runnable {
         out.flush();
     }
     
-       public void mostrarCatalogo (PrintWriter out) {
+    public void mostrarCatalogo (PrintWriter out) {
         try {
             for (Map.Entry<String,Double> e : e.getServers().entrySet()) {
                     out.println(e.getKey() + " - "  + e.getValue() + "." );
@@ -105,7 +109,24 @@ public class ServerWorker implements Runnable {
         catch (NumberFormatException e) {
         out.println("Não há servidores disponíveis no catálogo");
         out.flush();
+        }
     }
+
+    public void mostrarCatalogoLeiloes(PrintWriter out) {
+        List<Leilao> cl = new ArrayList<Leilao>();
+        cl = e.getLeiloes();
+        if (cl.isEmpty()) {
+            out.println("Não há leilões neste momento.");
+            out.flush();
+        }
+        else {
+            for (Leilao l : cl) {
+                if (LocalDateTime.now().isBefore(l.getFim())) {
+                    out.println("Leilão do servidor " + l.getServidor().toString() + "\nTempo que falta para acabar o leilão: " + Duration.between(LocalDateTime.now(), l.getFim()) + "\nValor da licitação " + l.getValorLicitacao());
+                    out.flush();
+                }
+            }
+        }
     }
 
     @Override
@@ -136,6 +157,7 @@ public class ServerWorker implements Runnable {
                     case "licitarServer":licitarServer(cmd[1],cmd[2],out);break;
                     case "consultarDivida": consultarDivida(out);break;
                     case "mostrarCatalogo":mostrarCatalogo(out);break;
+                    case "mostrarCatalogoLeiloes":mostrarCatalogoLeiloes(out);break;
                     default:out.println("Erro: Comando Invalido!");out.flush();break;
                 }
             }

@@ -1,9 +1,12 @@
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 public class GestServidores {
     private ReentrantLock usersLock;
@@ -32,7 +35,8 @@ public class GestServidores {
         servers.put("3",new Servidor("3","s3.medium", 1.50,"medium"));
         servers.put("4",new Servidor("4","s4.large", 2.30,"large"));
         servers.put("5",new Servidor("5","s5.large", 2.30,"large"));
-        serversLeiao.put("0",new Servidor("0","s0L.micro", 0,"micro"));
+        serversLeiao.put("0",new Servidor("0","s0L.micro", 0,"mirco"));
+        serversLeiao.put("1",new Servidor("1","s1L.medium",0,"medium"));
         reservas = new HashMap<>();
         nReservas = new AtomicInteger(0);
         servidoresDisponiveis = new AtomicInteger(0);
@@ -139,5 +143,12 @@ public class GestServidores {
                 finalserver.put(c.getKey(), c.getValue().getPrecoNominal());
         usersLock.unlock();
         return finalserver;
+    }
+
+    public List<Leilao> getLeiloes(){
+        usersLock.lock();
+        List<Leilao> cs = this.leiloes.values().stream().collect(Collectors.toList());
+        usersLock.unlock();
+        return cs;
     }
 }

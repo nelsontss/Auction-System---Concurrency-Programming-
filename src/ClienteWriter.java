@@ -21,13 +21,14 @@ class ClienteWriter implements Runnable {
                 String[] cmd = x.split("\\s+");
 
                 switch (cmd[0]){
-                    case "login": out.println(x);out.flush();break;
-                    case "register": out.println(x);out.flush();break;
-                    case "reservarServer": out.println(x);out.flush();break;
-                    case "libertarServer": out.println(x);out.flush();break;
-                    case "licitarServer": out.println(x); out.flush();break;
-                    case "consultarDivida": out.println(x);out.flush();break;
-                    case "mostrarCatalogo": out.println(x); out.flush();break;    
+                    case "login": if(cmd.length==3){out.println(x);out.flush();break;}
+                    case "register": if (cmd.length==3){out.println(x);out.flush();break;}
+                    case "reservarServer": if (cmd.length==2){out.println(x);out.flush();break;}
+                    case "libertarServer": if (cmd.length==2){out.println(x);out.flush();break;}
+                    case "licitarServer": if (cmd.length==3){out.println(x); out.flush();break;}
+                    case "consultarDivida": if (cmd.length==1){out.println(x);out.flush();break;}
+                    case "mostrarCatalogo": if (cmd.length==1){out.println(x); out.flush();break;}
+                    case "mostrarCatalogoLeiloes": if (cmd.length==1){out.println(x); out.flush();break;}
                     default:System.out.println("Erro: Comando Invalido!");
                 }
 
