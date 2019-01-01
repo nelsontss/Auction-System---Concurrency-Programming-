@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Map;
 
 public class ServerWorker implements Runnable {
     private Socket s;
@@ -96,12 +97,10 @@ public class ServerWorker implements Runnable {
     
        public void mostrarCatalogo (PrintWriter out) {
         try {
-            for (Servidor m : e.getServers().values()) {
-                if (!m.isReservado()) {
-                    out.println("m.getId()    String.valueOf(m.getPrecoNominal()) \n");
-                    out.flush();
-                }
+            for (Map.Entry<String,Double> e : e.getServers().entrySet()) {
+                    out.println(e.getKey() + " - "  + e.getValue() + "." );
             }
+            out.flush();
         }
         catch (NumberFormatException e) {
         out.println("Não há servidores disponíveis no catálogo");
@@ -136,7 +135,7 @@ public class ServerWorker implements Runnable {
                     case "libertarServer":libertaServer(cmd[1],out);break;
                     case "licitarServer":licitarServer(cmd[1],cmd[2],out);break;
                     case "consultarDivida": consultarDivida(out);break;
-                    case "mostrarCatalogo":licitarServer(out);break;    
+                    case "mostrarCatalogo":mostrarCatalogo(out);break;
                     default:out.println("Erro: Comando Invalido!");out.flush();break;
                 }
             }

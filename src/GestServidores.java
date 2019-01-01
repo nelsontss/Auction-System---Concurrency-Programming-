@@ -26,13 +26,13 @@ public class GestServidores {
         servers = new HashMap<>();
         serversLeiao = new HashMap<>();
         leiloes = new HashMap<>();
-        servers.put("0",new Servidor("0","s0.micro", 0.99,"mirco"));
-        servers.put("1",new Servidor("1","s1.micro", 0.99,"mirco"));
-        servers.put("2",new Servidor("2","s2.medium", 0.99,"medium"));
+        servers.put("0",new Servidor("0","s0.micro", 0.99,"micro"));
+        servers.put("1",new Servidor("1","s1.micro", 0.99,"micro"));
+        servers.put("2",new Servidor("2","s2.medium", 1.50,"medium"));
         servers.put("3",new Servidor("3","s3.medium", 1.50,"medium"));
         servers.put("4",new Servidor("4","s4.large", 2.30,"large"));
         servers.put("5",new Servidor("5","s5.large", 2.30,"large"));
-        serversLeiao.put("0",new Servidor("0","s0L.micro", 0,"mirco"));
+        serversLeiao.put("0",new Servidor("0","s0L.micro", 0,"micro"));
         reservas = new HashMap<>();
         nReservas = new AtomicInteger(0);
         servidoresDisponiveis = new AtomicInteger(0);
@@ -131,11 +131,12 @@ public class GestServidores {
         return users.get(user).getvDivida();
     }
 
-    public Map<String, Servidor> getServers()  {
-        Map<String,Servidor> finalserver=new HashMap<>();
+    public Map<String, Double> getServers()  {
+        Map<String,Double> finalserver=new HashMap<>();
         usersLock.lock();
-        for(Entry<String,Servidor> c: servers.entrySet())
-            finalserver.put(c.getKey(), c.getValue());
+        for(Map.Entry<String,Servidor> c: servers.entrySet())
+            if(!c.getValue().isReservado())
+                finalserver.put(c.getKey(), c.getValue().getPrecoNominal());
         usersLock.unlock();
         return finalserver;
     }
